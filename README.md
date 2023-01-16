@@ -1,4 +1,4 @@
-Đây là thử nghiệm trả lời câu hỏi dưới đây sau khi tìm hiểu về mô hình ngôn ngữ lớn (GPT-3, PaLM ...). Bước đầu tiên là thiết lập các thử nghiệm theo https://github.com/karpathy/nanoGPT và https://github.com/JonasGeiping/cramming (sao chép 1:1). Sau khi sao chép thành công sẽ áp dụng lên bộ dữ liệu thuần Việt có thể hoàn toàn là âm tiết tiếng Việt (a domain specific dataset).
+Đây là thử nghiệm trả lời câu hỏi dưới đây sau khi tìm hiểu về mô hình ngôn ngữ lớn (GPT-3, PaLM ...). Bước đầu tiên là thiết lập các thử nghiệm theo [nanoGPT](https://github.com/karpathy/nanoGPT) và [cramming](https://github.com/JonasGeiping/cramming) (sao chép 1:1). Sau khi sao chép thành công sẽ áp dụng lên bộ dữ liệu thuần Việt có thể hoàn toàn là âm tiết tiếng Việt (a domain specific dataset).
 
 - Liệu có thể lặp lại scaling law chỉ với một lượng dữ liệu và tính toán hạn chế? (xem cramming paper)
 
