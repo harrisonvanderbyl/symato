@@ -1,4 +1,4 @@
-Đây là thử nghiệm trả lời câu hỏi dưới đây sau khi tìm hiểu về mô hình ngôn ngữ lớn (GPT-3, PaLM ...). Bước đầu tiên là thiết lập các thử nghiệm theo [nanoGPT](https://github.com/karpathy/nanoGPT) và [cramming](https://github.com/JonasGeiping/cramming) (sao chép 1:1). Sau khi sao chép thành công sẽ áp dụng lên bộ dữ liệu thuần Việt có thể hoàn toàn là âm tiết tiếng Việt (a domain specific dataset).
+Thử nghiệm để trả lời nhũng câu hỏi dưới về mô hình ngôn ngữ lớn (GPT-3, PaLM ...). Bước đầu tiên là thiết lập các thử nghiệm theo [nanoGPT](https://github.com/karpathy/nanoGPT) và [cramming](https://github.com/JonasGeiping/cramming) (sao chép 1:1). Sau khi sao chép thành công sẽ áp dụng lên bộ dữ liệu càng thuần Việt càng tốt, có thể hoàn toàn là âm tiết tiếng Việt, mục đích là để tiết kiệm bộ tham số và làm nổi bật đặc trưng của tiếng Việt.
 
 - Liệu có thể lặp lại scaling law chỉ với một lượng dữ liệu và tính toán hạn chế? (xem cramming paper)
 
@@ -8,7 +8,7 @@
   - FlashAttention
   - AMP: Auto-Mixed Precision
   - Sử dụng [2:4 spare matrix](https://timdettmers.com/2023/01/16/which-gpu-for-deep-learning/#Sparse_Network_Training) (có thể coi đây là Dropout với p = 0.5)
-  - Viết lại bằng C++/CUDA framework https://github.com/NVlabs/tiny-cuda-nn
+  - Viết lại bằng C++/CUDA framework (tham khảo [tiny-cuda-nn](https://github.com/NVlabs/tiny-cuda-nn))
 
 - Các cách khác nhau để khai thác mô hình mà chưa cần fine-tune?
 
