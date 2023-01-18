@@ -1,3 +1,5 @@
+![](docs/files/gpt-00.jpg)
+
 Thử nghiệm để trả lời nhũng câu hỏi dưới về mô hình ngôn ngữ lớn (GPT-3, PaLM ...). Bước đầu tiên là thiết lập các thử nghiệm theo [nanoGPT](https://github.com/karpathy/nanoGPT) và [cramming](https://github.com/JonasGeiping/cramming) (sao chép 1:1). Sau khi sao chép thành công sẽ áp dụng lên bộ dữ liệu càng thuần Việt càng tốt, có thể hoàn toàn là âm tiết tiếng Việt, mục đích là để tiết kiệm bộ tham số và làm nổi bật đặc trưng của tiếng Việt.
 
 - Liệu có thể lặp lại scaling law chỉ với một lượng dữ liệu và tính toán hạn chế? (xem cramming paper)
