@@ -6,6 +6,8 @@ __=> Viet-Muong should be ~40Gb__ (=> 1/40 ~ 2.5%)
 
 ![](files/roots-02.jpg)
 
+![](files/roots-03.jpg)
+
 ## 3.1 Data cleaning and filtering
 
 - Too high character repetition or word repetition as a measure of repetitive content.
