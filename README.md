@@ -1,11 +1,20 @@
-Thử nghiệm để trả lời nhũng câu hỏi dưới về mô hình ngôn ngữ lớn (GPT-3, PaLM ...). Bước đầu tiên là thiết lập các thử nghiệm theo [nanoGPT](https://github.com/karpathy/nanoGPT) và [cramming](https://github.com/JonasGeiping/cramming) (sao chép 1:1). Sau khi sao chép thành công sẽ áp dụng lên bộ dữ liệu càng thuần Việt càng tốt, có thể hoàn toàn là âm tiết tiếng Việt, mục đích là để tiết kiệm bộ tham số và làm nổi bật đặc trưng của tiếng Việt.
+TODOs
+
+- [ ] Đọc hiểu RWKV
+- [ ] Viết lại RWKV inference engine
+- [ ] Đọc hiểu WKV-Cuda
+- [ ] Viết lại RWKV training engine
+
+- - -
+
+Thử nghiệm để trả lời nhũng câu hỏi dưới về mô hình ngôn ngữ lớn (GPT-3, PaLM ...). Bước đầu tiên là thiết lập các thử nghiệm theo [RWKV](https://github.com/BlinkDL/RWKV-LM) với bộ dữ liệu càng thuần Việt càng tốt, có thể hoàn toàn là âm tiết tiếng Việt, mục đích là để tiết kiệm bộ tham số và làm nổi bật đặc trưng của tiếng Việt.
 
 - Liệu có thể lặp lại scaling law chỉ với một lượng dữ liệu và tính toán hạn chế? (xem cramming paper)
 
 - Liệu có thể lặp lại scaling law chỉ với một tác vụ nhỏ trong xử lý ngôn ngữ? (xem santacoder)
 
 - Làm sao để tăng khả năng sử dụng tối đa sức mạnh phần cứng đang có để huấn luyện mô hình?
-  - FlashAttention
+  - FlashRWKV: tối ưu RWKV theo cách FlashAttention làm được cho Self-Attention
   - AMP: Auto-Mixed Precision
   - Sử dụng [2:4 spare matrix](https://timdettmers.com/2023/01/16/which-gpu-for-deep-learning/#Sparse_Network_Training) (có thể coi đây là Dropout với p = 0.5)
   - Viết lại bằng C++/CUDA framework (tham khảo [tiny-cuda-nn](https://github.com/NVlabs/tiny-cuda-nn))
