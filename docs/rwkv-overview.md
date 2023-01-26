@@ -20,10 +20,13 @@ Có thể hiểu rằng có hai mô hình rwkv trong một bộ tham số (dùng
 Điểm khác biệt nổi bật của rwkv không phải là tính chất vừa là tfm vừa là rnn mà là ở độ hiệu quả khi được triển khai như là một mô hình ngôn ngữ lớn (huấn luyện từ vài trăm M tới vài trăm B params với dataset the Pile). BlinkDL đã nói có nhiều mô hình vừa là tfm vừa là rnn, nhưng chưa mô hình nào được thử nghiệm với dữ liệu đủ lớn để chứng minh tính hiệu quả (BlinkDL nói những mô hình chưa được thử nghiệm với dataset đủ lớn và những bài tests LLM chuẩn thì là soulless).
 
 rwkv đã trải qua những thử nghiệm đó và chứng minh tính hiệu quả với một đường loss giảm giảm dần rất trơn tru (do Beng Po áp dụng nhiều mẹo và cũng do tính chất rnn của mô hình), và hiệu năng (độ chính xác) của mô hình tương đương với các transformers cùng số lượng tham số. Việc huấn luyện cũng nhanh và trơn tru hơn tfm (without loss spike at all). Và cũng tốt hơn với lượng dữ liệu nhỏ hay nói cách khác là không đòi hỏi lượng dữ liệu huấn luyện lớn để đạt được hiệu quả (well it's convering faster so that's like "do better with less data" - Beng Po). Beng Po cũng tin rằng rwkv "scaling" tốt hơn tfm !!!
+![](files/rwkv-02.png)
 
 Và với sự kết hợp giữa tfm và rnn này, ta có thể train rwkv với ctx len nhỏ 1024 và fine-tune nó với ctx len dài hơn rất nhiều. Nó cũng có khả năng ngoại suy (dùng với ctx len dài hơn ctx len lúc train) ngay cả khi chưa được fine-tune (TODO: cần tìm hiểu kỹ hơn tại sao lại làm được như thế)
 
 rwkv cũng có mối liên hệ với state space models, điển hình là bài báo về H3 và FlashConv của Trí Đào vừa ra mắt. Tuy nhiên H3 không loại bỏ hoàn toàn self-attn mà giữ lại 2 tầng SA. Beng Po cũng chỉ ra rằng H3 hoạt động kém hơn rwkv, nhưng nếu H3 áp dụng toàn bộ các mẹo của rwkv thì sẽ đạt được hiệu quả tương đương. Trí Đào là tác giả của FlashAttn, và những điểm hấp dẫn nhất của FlashAttn cũng như FlashConv là cách các tác giả triển khai thuật toán của họ tối ưu nhất cho CUDA, nhiều khả năng ta cũng có thể áp dụng cách triển khai tối ưu tương tự cho rwkv (TODO: tìm cách tối ưu hóa hết mức có thể cho CUDA rwkv).
+
+![](files/rwkv-03.png)
 
 - -
 
@@ -35,4 +38,8 @@ Cũng có nghi ngại rằng, rwkv hay atf không thể mạnh mẽ như self-at
 
 https://www.lesswrong.com/posts/K4urTDkBbtNuLivJx/why-i-think-strong-general-ai-is-coming-soon
 
-Cũng cần nói thêm rằng, tfm không phải là một kiến trúc quá đặc biệt. Sự thống trị của nó nằm ở việc nó ra đời đúng thời điểm, 
+Cũng cần nói thêm rằng, tfm không phải là một kiến trúc quá đặc biệt (tfm có thể được coi là trường hợp con của GNN). tfm có hai đặc điểm nổi bật, một là token, hai là self-attention. Không thể nói cái nào thực sự làm nên sự khác biệt cho tfm. Với kiểu dữ liệu token, MLP-Mixer cũng đạt độ hiệu quả gần như tương đương khi mà không cần dùng đến cơ chế attn. Cũng có nhiều biến thể của self-attn, như aft, thậm chí cải tiến của aft là rwkv vừa là tfm vừa là RNN khiến cho attn tuy rất mạnh mẽ không còn trở nên đặc biệt nữa (vì có nhiều thay thế đạt độ hiệu quả gần như tương đương).
+
+Sự thống trị của nó nằm ở việc nó ra đời đúng thời điểm, khi mà một kiến trúc tận dụng được sức mạnh phần cứng song song và đủ linh động để ứng dụng được trong nhiều domains, về lý thuyết bất kỳ mạng đặc nhiều lớp nào khi được "huấn luyện đủ" cũng sẽ đạt được độ hiệu quả tương tự. tfm là một mạng thưa, vừa "đủ tốt" cho optimizer, cho độ lớn của dữ liệu huấn luyện, ... Scaling law gần đây chỉ ra rằng tới một ngưỡng tăng độ lớn mô hình nhất định, thì hiệu năng mô hình chững lại. Tuy nhiên tiếp tục training mô hình với nhiều dữ liệu hơn thì hiệu năng tiếp tục tăng. Giả sử khi tfm đạt tới cực hạn, có vẻ như một mùa đông AI có thể tới, nhưng điều đó chưa chắc đã xảy ra vì nhiều khả năng các mô hình thay thế khác sẽ liên tiếp ra đời.
+
+Nên nhớ rằng, AI / DL mới chỉ ở thời kỳ sơ khai. Bằng chứng là các tiến bộ trong ngành này không phải được sinh ra trên một nền tảng lý thuyết toán học mạnh mẽ. Mà nó sinh ra như những gut feelings, shower thoughts, của những người thậm chí mới vào ngành chỉ vài tháng. Điều này được ví như chúng ta đang nằm trên bãi cỏ, dưới một cây táo, quơ tay bừa ra phía sau cũng vặt được những quả táo đủ để làm ta no bụng. Như thế rất khó có thể nói AI / DL sắp đạt tới cực hạn.
