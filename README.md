@@ -1,8 +1,8 @@
 TODOs
 
-- [ ] Đọc hiểu RWKV
+- [x] Đọc hiểu RWKV => [xem tài liệu](./docs/rwkv-overview.md)
 - [ ] Viết lại RWKV inference engine
-- [ ] Đọc hiểu WKV-Cuda
+- [ ] Đọc hiểu và thử tối ưu WKV-Cuda
 - [ ] Viết lại RWKV training engine
 
 - - -
