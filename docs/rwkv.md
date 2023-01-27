@@ -27,10 +27,16 @@ Bạn có thể chạy mô hình rwkv-4 với từ 3 tới 14 tỉ tham số v�
 # pip install rwkvstic transformers sty inquirer scipy
 from rwkvstic.load import RWKV
 from rwkvstic.agnostic.backends import JAX
-# model = RWKV("https://huggingface.co/BlinkDL/rwkv-4-pile-3b/resolve/main/RWKV-4-Pile-3B-20221110-ctx4096.pth", mode=JAX)
-model = RWKV("https://huggingface.co/BlinkDL/rwkv-4-pile-7b/resolve/main/RWKV-4-Pile-7B-20230109-ctx4096.pth", mode=JAX)
+ELDR = "\n\nExpert Long Detailed Response: "
+# ELDR = "\n\n"
+# model = RWKV("https://huggingface.co/BlinkDL/rwkv-4-pile-7b/resolve/main/RWKV-4-Pile-7B-20230109-ctx4096.pth", mode=JAX)
 # model = RWKV("https://huggingface.co/BlinkDL/rwkv-4-pile-14b/resolve/main/RWKV-4-Pile-14B-20230115-5775.pth", mode=JAX)
-model.resetState();t=input("q: ");model.loadContext("\n", f"{t}\n\nExpert Long Detailed Response: ");print(model.forward(number=1024)["output"])
+model = RWKV("https://huggingface.co/BlinkDL/rwkv-4-pile-3b/resolve/main/RWKV-4-Pile-3B-20221110-ctx4096.pth", mode=JAX) # need 16G RAM
+model.resetState();t=input("question: ");model.loadContext("\n", t+ELDR);print(model.forward(number=256)["output"])
+```
+```
+q: viết một đoạn văn mô tả cảnh đẹp vịnh Hạ Long
+r: 
 ```
 ![](files/rwkv-chat.jpg)
 
