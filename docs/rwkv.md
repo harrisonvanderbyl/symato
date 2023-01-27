@@ -32,12 +32,10 @@ ELDR = "\n\nExpert Long Detailed Response: "
 # model = RWKV("https://huggingface.co/BlinkDL/rwkv-4-pile-7b/resolve/main/RWKV-4-Pile-7B-20230109-ctx4096.pth", mode=JAX)
 # model = RWKV("https://huggingface.co/BlinkDL/rwkv-4-pile-14b/resolve/main/RWKV-4-Pile-14B-20230115-5775.pth", mode=JAX)
 model = RWKV("https://huggingface.co/BlinkDL/rwkv-4-pile-3b/resolve/main/RWKV-4-Pile-3B-20221110-ctx4096.pth", mode=JAX) # need 16G RAM
-model.resetState();t=input("question: ");model.loadContext("\n", t+ELDR);print(model.forward(number=256)["output"])
+model.resetState();t=input("question: ");model.loadContext("\n", t+ELDR);print(model.forward(number=100)["output"])
 ```
-```
-q: viết một đoạn văn mô tả cảnh đẹp vịnh Hạ Long
-r: 
-```
+Hoặc chạy trên [Google Colab](https://colab.research.google.com/drive/1X4WCvsyo2AyYJc6VT2jNT6oIHTAa-3_m)
+
 ![](files/rwkv-chat.jpg)
 
 ## rwkv rất hiệu quả
