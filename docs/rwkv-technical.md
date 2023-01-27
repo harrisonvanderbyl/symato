@@ -1,11 +1,11 @@
 https://github.com/BlinkDL/RWKV-LM
 
-# Công thức toán học
+# Math
 ![](files/rwkv-00.png)
-__RWKV is like [AFT](./aft.md) with special w_{k, k'}__
+_RWKV is like [AFT](./aft.md) with special `w_{k, k'}`_
 
 ![](files/rwkv-04.jpg)
-__Triển khai công thức GPT thành công thức RNN__
+_Triển khai công thức GPT thành công thức RNN_
 
 ## Từ GPT tới RWKV
 - Gọi `F[t]` là trạng thái hệ thống tại (thời điểm) t.
@@ -30,39 +30,14 @@ với rwkv, đóng góp của F[t] vào F[t+1] cân đo bằng `sigma(R_x[t]) . 
 
 ## Punchline
 Ta có thể viết lại công thức gpt ở trên thành rnn (công thức hồi quy):
-- F[1] = sigma(R x[0]) . exp(K F[0]).(V F[0])/exp(K F[0])
-- F[2] = sigma(R x[1]) . exp(K F[1]).(V F[1]) + exp(W).exp(K F[0]).(V F[0])/exp(K F[1]) + exp(W).exp(K F[0])
-Vì thế có thể dễ dàng thấy:
-`F[t+1] = sigma(R x[t+1]) . exp(K F[t]).(V F[t]) + exp(W).A[t] / exp(K F[t]) + exp(W).B[t]` với A[t] và B[t] là tử số và mẫu số của bước t trước đó.
+- `F[1] = sigma(R x[0]) . exp(K F[0]).(V F[0])/exp(K F[0])`
+- `F[2] = sigma(R x[1]) . exp(K F[1]).(V F[1]) + exp(W).exp(K F[0]).(V F[0])/exp(K F[1]) + exp(W).exp(K F[0])`
+- Dễ thấy: `F[t+1] = sigma(R x[t+1]) . exp(K F[t]).(V F[t]) + exp(W).A[t] / exp(K F[t]) + exp(W).B[t]` với A[t] và B[t] là tử số và mẫu số của bước trước đó.
 
 Peng Bo tin rằng rwkv có hiệu năng tốt là nhờ W is like repeatedly applying a diagonal matrix. 
 Note `(P^{-1} D P)^n = P^{-1} D^n P`, so it is similar to repeatedly applying a general diagonalizable matrix (ma trận chéo hóa được). Hơn thế nữa nó có thể được biến thành continuous ODE (a bit similar to State Space Models). (TODO: tìm hiểu về diagonal matrix, ODE, State Space Models).
 
-## time-weighting trick
-https://github.com/BlinkDL/minGPT-tuned
-
-```py
-self.time_weighting = nn.Parameter(torch.ones(self.n_head, config.block_size, config.block_size))
-......
-att = F.softmax(att, dim=-1)
-att = att * self.time_weighting[:,:T,:T] # this is "time-weighting"
-att = self.attn_drop(att)
-```
-Time-weighting works bởi vì tokens từ các khoảng cách khác nhau sẽ có những impacts khác nhau vào token đang xét. Hơn nữa hiệu ứng self-attn sẽ bị thay đổi ở những tokens xuất hiện sớm bởi vì chúng có cửa sổ lịch sử ngắn hơn.
-p.s. bởi vì time_weigting gần như là một ma trận tuần hoàn (mostly a circulant matrix), sử dụng code sau để tiết kiệm tham số:
-```py
-self.time_weight = nn.Parameter(torch.ones(self.n_head, config.block_size))
-self.time_bias = nn.Parameter(torch.ones(self.n_head, 1, config.block_size)) # dealing with early tokens 
-......
-ww = F.pad(self.time_weight, (0, TT))
-ww = torch.tile(ww, [TT])
-ww = ww[:, :-TT].reshape(-1, TT, 2 * TT - 1)
-ww = ww[:, :, TT-1:]
-ww = ww[:, :T, :T] # make a circulant matrix
-time_weighting = ww * self.time_bias[:, :, :T]
-```
-
-# How it works?
+## How it works?
 rwkv tập hợp thông tin vào các kênh (token là vector, mỗi scalar value của vector được gọi là 1 channel - kênh), các kênh này phân rã theo thời gian với tốc độ khác nhau khi chuyển tới token tiếp theo.
 
 rwkv có thể song song hóa được là nhờ hệ số phân ra theo thời gian của từng kênh là độc lập với với dữ liệu mặc, và hệ số này có thể huấn luyện được. Ví dụ, với rnn thông thường bạn có thể điều chỉnh hệ số phân rã của một kênh từ 0.8 xuống 0.5 (chúng được gọi là gates - cổng), trong khi đó rwkv đơn giản là chuyển thông tin từ kênh W-0.8 vào kênh W-0.5 để đạt được hiệu ứng tương tự. Hơn thế nữa bạn có thể tinh chỉnh (fine-tune) rwkv thành rnn không song song nếu bạn muốn hiệu năng cao hơn.
@@ -83,12 +58,7 @@ Moreover it's using a number of my tricks, such as:
 
 * __You can transfer some parameters__ from a small model to a large model (note: I sort & smooth them too), for [faster and better convergence](https://www.reddit.com/r/MachineLearning/comments/umq908/r_rwkvv2rnn_a_parallelizable_rnn_with).
 
-* (__CUDA kernel__)(https://github.com/BlinkDL/RWKV-LM/tree/main/RWKV-v4neo/cuda) to speedup training.
-
-- - -
-
-# pseudocode 
-https://github.com/BlinkDL/RWKV-LM#the-pseudocode-execution-from-top-to-bottom
+* [__CUDA kernel__](https://github.com/BlinkDL/RWKV-LM/tree/main/RWKV-v4neo/cuda) to speedup training.
 
 ## rwkv-2
 - Là RNN nhưng có thể được huấn luyện như GPT transformer
@@ -144,6 +114,34 @@ Notes:
 - R-gate là quan trọng với hiệu năng.
   - k = sức mạnh thông tin của token đang xét, sẽ được chuyển tiếp tới các tokens trong tương lai.
   - r = liệu có áp dụng thông tin vào token đang xét hay không
+
+- - -
+
+# code 
+
+## time-weighting trick
+https://github.com/BlinkDL/minGPT-tuned
+
+```py
+self.time_weighting = nn.Parameter(torch.ones(self.n_head, config.block_size, config.block_size))
+......
+att = F.softmax(att, dim=-1)
+att = att * self.time_weighting[:,:T,:T] # this is "time-weighting"
+att = self.attn_drop(att)
+```
+Time-weighting works bởi vì tokens từ các khoảng cách khác nhau sẽ có những impacts khác nhau vào token đang xét. Hơn nữa hiệu ứng self-attn sẽ bị thay đổi ở những tokens xuất hiện sớm bởi vì chúng có cửa sổ lịch sử ngắn hơn.
+p.s. bởi vì time_weigting gần như là một ma trận tuần hoàn (mostly a circulant matrix), sử dụng code sau để tiết kiệm tham số:
+```py
+self.time_weight = nn.Parameter(torch.ones(self.n_head, config.block_size))
+self.time_bias = nn.Parameter(torch.ones(self.n_head, 1, config.block_size)) # dealing with early tokens 
+......
+ww = F.pad(self.time_weight, (0, TT))
+ww = torch.tile(ww, [TT])
+ww = ww[:, :-TT].reshape(-1, TT, 2 * TT - 1)
+ww = ww[:, :, TT-1:]
+ww = ww[:, :T, :T] # make a circulant matrix
+time_weighting = ww * self.time_bias[:, :, :T]
+```
 
 ## RWKV-3 improvements
 1/ Sử dụng hệ số time_mix có thể huấn luyện được cho R,K,V trong tầng SA và tầng FF. Ví dụ:  
