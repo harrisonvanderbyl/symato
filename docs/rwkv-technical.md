@@ -63,7 +63,9 @@ time_weighting = ww * self.time_bias[:, :, :T]
 ```
 
 # How it works?
-https://github.com/BlinkDL/RWKV-LM#how-it-works
+rwkv tập hợp thông tin vào các kênh (token là vector, mỗi scalar value của vector được gọi là 1 channel - kênh), các kênh này phân rã theo thời gian với tốc độ khác nhau khi chuyển tới token tiếp theo.
+
+rwkv có thể song song hóa được là nhờ hệ số phân ra theo thời gian của từng kênh là độc lập với với dữ liệu mặc, và hệ số này có thể huấn luyện được. Ví dụ, với rnn thông thường bạn có thể điều chỉnh hệ số phân rã của một kênh từ 0.8 xuống 0.5 (chúng được gọi là gates - cổng), trong khi đó rwkv đơn giản là chuyển thông tin từ kênh W-0.8 vào kênh W-0.5 để đạt được hiệu ứng tương tự. Hơn thế nữa bạn có thể tinh chỉnh (fine-tune) rwkv thành rnn không song song nếu bạn muốn hiệu năng cao hơn.
 
 RWKV is inspired by Apple's AFT (https://arxiv.org/abs/2105.14103).
 
