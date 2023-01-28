@@ -35,7 +35,7 @@ model = RWKV("https://huggingface.co/BlinkDL/rwkv-4-pile-3b/resolve/main/RWKV-4-
 model.resetState();t=input("question: ");model.loadContext("\n", t+ELDR);print(model.forward(number=100)["output"])
 ```
 Hoặc chạy trên [Google Colab](https://colab.research.google.com/drive/1X4WCvsyo2AyYJc6VT2jNT6oIHTAa-3_m)
-
+![](files/rwkv-chat-01.jpg)
 ![](files/rwkv-chat.jpg)
 
 ## rwkv rất hiệu quả

@@ -2,9 +2,11 @@ https://github.com/BlinkDL/RWKV-LM
 
 # Math
 ![](files/rwkv-00.png)
+
 _RWKV is like [AFT](./aft.md) with special `w_{k, k'}`_
 
 ![](files/rwkv-04.jpg)
+
 _Triển khai công thức GPT thành công thức RNN_
 
 ## Từ GPT tới RWKV
@@ -18,12 +20,10 @@ Công thức này rất mạnh mẽ về mặt lý thuyết nhưng trên thực 
 
 So sánh với công thức đơn giản hóa của rwkv ở chế độ song song, nó giống như Apple's aft:
 `F[t+1] = sigma(R_x[t]).sum_{i=0}^t( exp(W.(t-i)).exp(K F[i]).(V F[i]) ) / sum_{i=0}^t( exp(W.(t-i)).exp(K F[i]) )`
-R,K,V là các ma trận trọng số (có thể huấn luyện được), W là vector trọng số có thể huấn luyện được (phân rã thời gian cho từng channel).
+R,K,V là các ma trận trọng số (có thể huấn luyện được), W là vector trọng số (có thể huấn luyện được và là hệ số phân rã thời gian cho từng kênh).
 
-Với GPT, đóng góp của F[t] vào F[t+1] cân đo bằng `exp(Q x[t] mul K F[i])`
-
-với rwkv, đóng góp của F[t] vào F[t+1] cân đo bằng `sigma(R_x[t]) . exp(W.(t-i)).exp(K F[i])`
-
+- Với GPT, đóng góp của F[t] vào F[t+1] cân đo bằng `exp(Q x[t] . K F[i])`
+- với rwkv, đóng góp của F[t] vào F[t+1] cân đo bằng `sigma(R_x[t]) . exp(W.(t-i)).exp(K F[i])`
 - `sigma` là hàm phi tuyến tính và ở đây chúng ta dùng hàm sigmoid
 - Lưu ý `sigma(R x[t])` không phải là mẫu số mà ta gọi R là "receptance" (sự rung lắc trên từng đơn vị lực tác động)
 - `exp(W.(t-i))` là hệ số phân rã theo thời gian (của từng channel). Ý tưởng này giống như scaling the attention by distance được Peng Bo đề xuất 2020 được gọi là [time-weighting](#time-weighting-trick)
@@ -42,7 +42,7 @@ rwkv tập hợp thông tin vào các kênh (token là vector, mỗi scalar valu
 
 rwkv có thể song song hóa được là nhờ hệ số phân ra theo thời gian của từng kênh là độc lập với với dữ liệu mặc, và hệ số này có thể huấn luyện được. Ví dụ, với rnn thông thường bạn có thể điều chỉnh hệ số phân rã của một kênh từ 0.8 xuống 0.5 (chúng được gọi là gates - cổng), trong khi đó rwkv đơn giản là chuyển thông tin từ kênh W-0.8 vào kênh W-0.5 để đạt được hiệu ứng tương tự. Hơn thế nữa bạn có thể tinh chỉnh (fine-tune) rwkv thành rnn không song song nếu bạn muốn hiệu năng cao hơn.
 
-RWKV is inspired by Apple's AFT (https://arxiv.org/abs/2105.14103).
+RWKV is inspired by [Apple's AFT](https://arxiv.org/abs/2105.14103).
 
 Moreover it's using a number of my tricks, such as:
 
@@ -54,24 +54,24 @@ Moreover it's using a number of my tricks, such as:
 
 * __Extra R-gate in the FFN__ (applicable to all transformers). I am also using reluSquared from Primer.
 
-* __Better initilization__: I init most of the matrices to ZERO [see RWKV_Init](https://github.com/BlinkDL/RWKV-LM/blob/main/RWKV-v2-RNN/src/model.py).
+* [__Better initilization__](https://github.com/BlinkDL/RWKV-LM/blob/main/RWKV-v2-RNN/src/model.py): I init most of the matrices to ZERO.
 
-* __You can transfer some parameters__ from a small model to a large model (note: I sort & smooth them too), for [faster and better convergence](https://www.reddit.com/r/MachineLearning/comments/umq908/r_rwkvv2rnn_a_parallelizable_rnn_with).
+* [__You can transfer some parameters__]((https://www.reddit.com/r/MachineLearning/comments/umq908/r_rwkvv2rnn_a_parallelizable_rnn_with)) from a small model to a large model (note: I sort & smooth them too), for faster and better convergence.
 
 * [__CUDA kernel__](https://github.com/BlinkDL/RWKV-LM/tree/main/RWKV-v4neo/cuda) to speedup training.
 
 ## rwkv-2
 - Là RNN nhưng có thể được huấn luyện như GPT transformer
 - Chỉ cần {x_t, a_t, b_t} của vị trí t để tính ra vector của t+1
-- Nó nhanh hơn và tiết kiệm VRAM hơn GPT 100 lần
+- Nó nhanh hơn và tiết kiệm bộ nhớ hơn GPT 100x lần
 
-### Tầng self-attn
+### Tầng self-attn (SA Layer)
 ![](files/rwkv-05.jpg)
 - x_t là đầu vào của tầng n tại vị trí t, x_t.shape = (C), C là độ dài vector và cũng là số channels
-- Ma trận trọng số K: K.shape = (C,C) init to zero
-- Ma trận trọng số V: V.shape = (C,C)
-- Ma trận trọng số R: R.shape = (C,C) init to zero
-- Token-shift Ts init to (1,1,1,...,0,0,0), Ts.shape = (C) (C//2 values đầu là 1, C//2 values sau là 0)
+- Ma trận trọng số `K`: K.shape = (C,C) init to zero
+- Ma trận trọng số `V`: V.shape = (C,C)
+- Ma trận trọng số `R`: R.shape = (C,C) init to zero
+- Token-shift `Ts` init to (1,1,1,...,0,0,0), Ts.shape = (C) (C//2 values đầu là 1, C//2 values sau là 0)
 - `z_t = Ts*x_{t-1} + (1 - Ts)*x_t` trộn x_t với token x_{t-1} 
 - `k_t =     exp(K @ z_t)`
 - `v_t =        (V @ z_t)`
@@ -93,7 +93,7 @@ Notes:
 - Ta dùng giá trị khởi tạo được tính toán trước cho W, giá trị W khác nhau cho từng channels khác nhau, và W nhỏ hơn (phân rã nhanh hơn) cho các tầng phía trước.
 - Ta cần "khóa" k và cộng  thêm epsilon vào d để tránh overflows.
 - Các hệ số a,b,c,d làm việc cùng nhau để xây dựng một đường cong phân rã theo thời gian [X, 1, W, W^2, W^3, ...]
-- a và b là EMAs của kv và k
+- a và b là EMAs (exponential moving average) của kv và k
 - c và d là a và b kết hợp với "self-attn"
 
 ### Tầng FF
@@ -110,7 +110,7 @@ Notes:
 - FF output, `out_t = x_t + r_t * v_t`, out.shape = (C)
 
 Notes:
-- kv / k là cơ chế ghi nhớ. Token với giá trị k cao sẽ được ghi nhớ lâu hơn nếu W gần với 1 trong channel đang xét.
+- kv / k (c / d trong công thức rwkv gpt) là cơ chế ghi nhớ. Token với giá trị k cao sẽ được ghi nhớ lâu hơn nếu W gần với 1
 - R-gate là quan trọng với hiệu năng.
   - k = sức mạnh thông tin của token đang xét, sẽ được chuyển tiếp tới các tokens trong tương lai.
   - r = liệu có áp dụng thông tin vào token đang xét hay không
