@@ -3,7 +3,7 @@ TODOs
 - [x] Đọc hiểu RWKV => [xem rwkv.md](./docs/rwkv.md)
 - [ ] Viết lại RWKV inference engine
 - [ ] Đọc hiểu và thử tối ưu WKV-Cuda
-- [ ] Viết lại RWKV training engine
+- [ ] RWKV vs NanoGPT với âm tiết tiếng Việt
 
 - - -
 

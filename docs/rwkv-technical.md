@@ -331,7 +331,7 @@ class RWKV_TimeMix(MyModule): # time mix là ATT layer
         self.layer_id = layer_id
         self.ctx_len = args.ctx_len
         self.n_embd = args.n_embd
-\        attn_sz = args.n_embd
+        attn_sz = args.n_embd
 
         with torch.no_grad():  # fancy init
             ratio_0_to_1 = layer_id / (args.n_layer - 1)  # 0 to 1
@@ -480,3 +480,55 @@ class Block(nn.Module):
             x = x + c @ self.tiny_v(x_emb)
         return x
 ```
+
+https://github.com/BlinkDL/RWKV-LM/blob/main/RWKV-v4neo/run.py
+```py
+TOKEN_MODE = "pile"
+WORD_NAME = [
+    "20B_tokenizer.json",
+    "20B_tokenizer.json",
+]  # [vocab, vocab] for Pile model
+UNKNOWN_CHAR = None
+vocab_size = 50277
+
+MODEL_NAME = '/fsx/BlinkDL/rwkv-release/RWKV-4-Pile-430M-20220808-8066'
+n_layer = 24
+n_embd = 1024
+ctx_len = 1024
+
+args.MODEL_NAME = MODEL_NAME
+args.n_layer = n_layer
+args.n_embd = n_embd
+args.ctx_len = ctx_len
+args.vocab_size = vocab_size
+args.head_qk = 0
+args.pre_ffn = 0
+args.grad_cp = 0
+args.my_pos_emb = 0
+os.environ["RWKV_RUN_DEVICE"] = args.RUN_DEVICE
+```
+- Bộ từ vựng Bloom khoảng 500k từ, bộ từ vựng rwkv đang dùng khoảng 50k từ.
+- Toàn bộ âm tiết tiếng Việt viết thường khoảng 16k, âm tiết viết thường và hay dùng khoảng 12k.
+- Nếu tách dấu thanh ra thì còn khoảng 2534 syllables + 18 marktones (< 2560 = 10 * 2^8)
+
+- `~  2.5k   1x` syll+marktone vocab
+- `~ 15.0k   6x` syllable vocab
+- `~ 50.0k  20x` the pile vocab
+- `~500.0k 200x` bloom vocab
+
+```
+2560 -> 1024 -> ... -> 1024 -> 2560
+[embed] [24 x blocks]     [predict]
+```
+
+- ctx_length 1024 (1k)
+- vocab_size 2560 (2.5k), 51200 (50k)
+- embed_size 1024 (1k)
+- _embed_: 1 ma trận nhúng   (vocab_size, embed_size) => 2.5M, 50M params
+- _predict_: 1 ma trận       (embed_size, vocab_size) => 2.5M, 50M params
+- _24 x blocks_: 168 ma trận (embed_size, embed_size) => 168M params
+  - _block_: 7 ma trận (embed_size, embed_size)
+    - TimeMix: 4 ma trận key, value, receptance, output (embed_size, embed_size)
+    - ChannelMix: 3 ma trận key, value, receptance (embed_size, embed_size)
+
+Ngoài việc tăng params, vocab_size còn ảnh hưởng tới infer speed ntn?
