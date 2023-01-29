@@ -507,6 +507,9 @@ args.grad_cp = 0
 args.my_pos_emb = 0
 os.environ["RWKV_RUN_DEVICE"] = args.RUN_DEVICE
 ```
+
+# Phân tích bộ từ vựng
+
 - Bộ từ vựng Bloom khoảng 500k từ, bộ từ vựng rwkv đang dùng khoảng 50k từ.
 - Toàn bộ âm tiết tiếng Việt viết thường khoảng 16k, âm tiết viết thường và hay dùng khoảng 12k.
 - Nếu tách dấu thanh ra thì còn khoảng 2534 syllables + 18 marktones (< 2560 = 10 * 2^8)
@@ -524,9 +527,9 @@ os.environ["RWKV_RUN_DEVICE"] = args.RUN_DEVICE
 - ctx_length 1024 (1k)
 - vocab_size 2560 (2.5k), 51200 (50k)
 - embed_size 1024 (1k)
-- _embed_: 1 ma trận nhúng   (vocab_size, embed_size) => 2.5M, 50M params
-- _predict_: 1 ma trận       (embed_size, vocab_size) => 2.5M, 50M params
-- _24 x blocks_: 168 ma trận (embed_size, embed_size) => 168M params
+- _embed_: 1 ma trận nhúng  (vocab_size, embed_size) => 2.5k vocab => 2.5M params, 50k vocab => 50M params
+- _predict_: 1 ma trận      (embed_size, vocab_size) => 2.5M, 50M params
+- _12 x blocks_: 84 ma trận (embed_size, embed_size) => 84M params
   - _block_: 7 ma trận (embed_size, embed_size)
     - TimeMix: 4 ma trận key, value, receptance, output (embed_size, embed_size)
     - ChannelMix: 3 ma trận key, value, receptance (embed_size, embed_size)
