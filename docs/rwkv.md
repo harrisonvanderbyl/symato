@@ -30,7 +30,7 @@ PROMPT = "Expert Questions & Helpful Answers\nAsk Research Experts\nQuestion:"
 file="https://huggingface.co/BlinkDL/rwkv-4-pile-3b/resolve/main/RWKV-4-Pile-3B-20221110-ctx4096.pth"
 # file="https://huggingface.co/BlinkDL/rwkv-4-pile-7b/resolve/main/RWKV-4-Pile-7B-20230109-ctx4096.pth"
 # file="https://huggingface.co/BlinkDL/rwkv-4-pile-14b/resolve/main/RWKV-4-Pile-14B-20230115-5775.pth"
-model = RWKV(file, mode=TORCH_STREAM, dtype=torch.bfloat16, target=4, pinMem=True)
+model = RWKV(file, mode=TORCH_STREAM, dtype=torch.bfloat16, target=3, pinMem=True)
 model.resetState();t=input("q: ");model.loadContext("\n", PROMPT+t+"\nFull Answer:");print(model.forward(number=100)["output"])
 t=input("q: ");model.loadContext("\n", PROMPT+t+"\nFull Answer:");print(model.forward(number=100)["output"])
 # ELDR = "\n\nExpert Long Detailed Response: "
