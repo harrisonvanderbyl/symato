@@ -1,8 +1,8 @@
-![](docs/files/what-i-cannot-create-i-do-not-understan
 
 
 
-- [x] Tìm cách tokenization hợp với tiếng việt => xem [symato](#symato)
+
+- [x] Tìm cách tokenize hợp với tiếng việt => xem [symato](#symato)
 - [x] Đọc hiểu RWKV => [xem rwkv.md](./docs/rwkv.md)
 - [ ] Viết lại RWKV inference engine
 - [ ] Đọc hiểu và thử tối ưu WKV-Cuda
