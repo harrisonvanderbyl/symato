@@ -1,3 +1,5 @@
+![](docs/files/what-i-cannot-create-i-do-not-understand.jpg)
+
 TODOs
 
 - [x] Tìm cách tokenization hợp với tiếng việt => xem [symato](#symato)
