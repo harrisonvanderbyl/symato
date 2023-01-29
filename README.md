@@ -63,6 +63,10 @@ Như vậy chỉ cần bộ vocab 2816 tokens (2560 tokens để encode thuần 
 ### Tại sao không dùng bộ vocab lớn hơn?
 Hoàn toàn có thể mở rộng vocabs lên nữa khi cần, nhưng việc giới hạn bộ vocabs nhỏ sẽ giúp tiết kiệm số lượng tham số và làm tăng tốc độ của mô hình. Và như giải thích ở trên, tôi tin rằng bộ vocab như vậy là đủ tốt cho những tài nguyên tiếng Việt hiện có.
 
+Thống kê gần phân tách 1Gb text trộn từ facebook comments, news titles, viet opensub, wikipedia, sách, truyện được:
+![](docs/files/vi-corpus.jpg)
+=> số lượng tokens không phải tiếng Việt và là 1 ký tự chiếm tới 18%, số tokens này dùng 256-bytes để encode là vô cùng hợp lý. Số lượng ít ỏi tokens không phải tiếng Việt còn lại dùng 256-bytes để encode cũng không ảnh hưởng nhiều tới hiệu năng mô hình.
+
 ## Others
 
 ![](docs/files/gpt-00.jpg)
