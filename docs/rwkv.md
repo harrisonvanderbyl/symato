@@ -24,17 +24,17 @@ Vì thế nó bao gồm những điều tốt đẹp nhất của rnn và tfm: h
 Bạn có thể chạy mô hình rwkv-4 với từ 3 tới 14 tỉ tham số trên bất kỳ GPU nào với [rwkv_chatbot](https://github.com/harrisonvanderbyl/rwkv_chatbot/blob/main/Example.ipynb)
 ```py
 # pip install rwkvstic transformers sty inquirer scipy pytorch
-from rwkvstic.load import RWKV
-from rwkvstic.agnostic.backends import TORCH_STREAM as TS
+from rwkvstic.load import RWKV; import torch
+from rwkvstic.agnostic.backends import TORCH_STREAM
 PROMPT = "Expert Questions & Helpful Answers\nAsk Research Experts\nQuestion:"
-ELDR = "\n\nExpert Long Detailed Response: "
-# model = RWKV("https://huggingface.co/BlinkDL/rwkv-4-pile-3b/resolve/main/RWKV-4-Pile-3B-20221110-ctx4096.pth", mode=TS)
-# model = RWKV("https://huggingface.co/BlinkDL/rwkv-4-pile-7b/resolve/main/RWKV-4-Pile-7B-20230109-ctx4096.pth", mode=TS)
-# model = RWKV("https://huggingface.co/BlinkDL/rwkv-4-pile-14b/resolve/main/RWKV-4-Pile-14B-20230115-5775.pth", mode=TS)
-# model.resetState();t=input("q: ");model.loadContext("\n", t+ELDR);print(model.forward(number=100)["output"])
-model = RWKV("RWKV-4-Pile-7B-20230109-ctx4096.pth", backend=TS, 
-	runtimedtype=torch.float32, dtype=torch.bfloat16, target=4, pinMem=True)
+# file="https://huggingface.co/BlinkDL/rwkv-4-pile-3b/resolve/main/RWKV-4-Pile-3B-20221110-ctx4096.pth"
+file="https://huggingface.co/BlinkDL/rwkv-4-pile-7b/resolve/main/RWKV-4-Pile-7B-20230109-ctx4096.pth"
+# file="https://huggingface.co/BlinkDL/rwkv-4-pile-14b/resolve/main/RWKV-4-Pile-14B-20230115-5775.pth"
+model = RWKV(file, mode=TORCH_STREAM, dtype=torch.bfloat16, target=3, pinMem=True)
 model.resetState();t=input("q: ");model.loadContext("\n", PROMPT+t+"\nFull Answer:");print(model.forward(number=100)["output"])
+t=input("q: ");model.loadContext("\n", PROMPT+t+"\nFull Answer:");print(model.forward(number=100)["output"])
+# ELDR = "\n\nExpert Long Detailed Response: "
+# model.resetState();t=input("q: ");model.loadContext("\n", t+ELDR);print(model.forward(number=100)["output"])
 ```
 Hoặc chạy trên [Google Colab](https://colab.research.google.com/drive/1X4WCvsyo2AyYJc6VT2jNT6oIHTAa-3_m) |
 Hoặc thử [Discord chatbot](https://discord.com/invite/bDSBUMeFpc)
