@@ -1,6 +1,6 @@
 ![](docs/files/what-i-cannot-create-i-do-not-understand.jpg)
 
-TODOs
+# [Những gì tôi không thể tạo ra, tôi không hiểu. Biết cách giải quyết mọi vấn đề đã được giải quyết.](https://freshspectrum.com/richard-feynman-what-i-cannot-create-i-do-not-understand)
 
 - [x] Tìm cách tokenization hợp với tiếng việt => xem [symato](#symato)
 - [x] Đọc hiểu RWKV => [xem rwkv.md](./docs/rwkv.md)
