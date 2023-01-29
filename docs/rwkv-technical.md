@@ -527,11 +527,21 @@ os.environ["RWKV_RUN_DEVICE"] = args.RUN_DEVICE
 - ctx_length 1024 (1k)
 - vocab_size 2560 (2.5k), 51200 (50k)
 - embed_size 1024 (1k)
-- _embed_: 1 ma trận nhúng  (vocab_size, embed_size) => 2.5k vocab => 2.5M params, 50k vocab => 50M params
-- _predict_: 1 ma trận      (embed_size, vocab_size) => 2.5M, 50M params
-- _12 x blocks_: 84 ma trận (embed_size, embed_size) => 84M params
+- _embed_: 1 ma trận nhúng  (vocab_size, embed_size): 2.5k vocab => 2.5M params, 50k vocab => 50M params
+- _predict_: 1 ma trận      (embed_size, vocab_size): 2.5k vocab => 2.5M params, 50k vocab => 50M params
+- _12 x blocks_: 84 ma trận (embed_size, embed_size): 84M params
   - _block_: 7 ma trận (embed_size, embed_size)
     - TimeMix: 4 ma trận key, value, receptance, output (embed_size, embed_size)
     - ChannelMix: 3 ma trận key, value, receptance (embed_size, embed_size)
 
-Ngoài việc tăng params, vocab_size còn ảnh hưởng tới infer speed ntn?
+2 ma trận lớn liên quan trực tiếp với vocab_size là embed và predict, giả sử số blocks giữ nguyên là 12 và chỉ tăng vocab_size thì ta có tham số mô hình tăng theo như sau:
+```
+vocab                size            params
+- - - - - - - - - - - - - - - - - - - - - -
+syll+marktone  2.5k    1x       89M   1.00x
+syllable      15.0k    6x      114M   1.28x
+the pile      50.0k   20x      184M   2.07x
+bloom        500.0k  200x     1084M  12.18x
+```
+
+Ngoài việc tăng params, vocab_size còn ảnh hưởng tới infer speed ntn? (thông qua không gian tìm kiếm của bộ decoder ...)
