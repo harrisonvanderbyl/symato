@@ -53,13 +53,15 @@ https://user-images.githubusercontent.com/8133/215305323-4d776242-d8fe-497e-96f5
 Video cho thấy tốc độ sinh dữ liệu cho tiếng Việt chậm hơn rất nhiều so với tiếng Anh do nó sinh từng ký tự một thậm chí từng byte một cho tiếng Việt. Còn với tiếng Anh nó chủ yếu sinh theo từ. Tuy bất lợi như vậy nhưng mô hình vẫn đủ mạnh mẽ để lưu trữ các thông tin tiếng Việt và tìm ra câu trả lời hợp lý. Điều đó cho thấy sức mạnh rất to lớn của mô hình ngôn ngữ, và chatgpt là ứng dụng đầu tiên đưa sức mạnh đó tới tay người dùng một cách dễ chịu. Hay nói cách khác chatgpt xây dựng được giao diện hợp lý để người dung khai thác sức mạnh của mô hình ngôn ngữ lớn. (Lưu ý: câu trả lời của chatGPT về âm tiết tiếng Việt là chưa chính xác hoàn toàn).
 
 ## Symato
-__Trả lời câu hỏi: Cách tokenization nào hợp với tiếng Việt?__
+__Cách tokenization nào hợp với tiếng Việt?__
 
 Tknz là cách bẻ text thành các đơn vị thông tin để đưa vào xử lý. Tknz cần cân bằng giữa 1/ số lượng vocab (unique tokens), 2/ độ phủ thông tin của tokens và 3/ tính linh hoạt của mô hình:
-- Số lượng vocab lớn làm tăng params và chậm mô hình
-- Số lượng vocab nhỏ, thì độ phủ thông tin thấp nhưng tính linh hoạt cao. Ví dụ có thể xử lý những từ chưa gặp trong bộ huấn luyện miễn là nó có thể cấu thành từ vocab đang có. Cách biển diễn linh hoạt nhất là dùng 256-bytes làm vocab, vì mọi dữ liệu bất kỳ đều có thể biểu diễn bằng một chuỗi bytes.
+- Số lượng vocab lớn làm tăng params và chậm mô hình. Số lượng vocab nhỏ, thì độ phủ thông tin thấp
+- Độ phủ thông tin thấp nhưng tính linh hoạt cao và ngược lại độ phủ thông tin cao thì tính linh hoạt giảm đi. Ví dụ có thể xử lý những từ chưa gặp trong bộ huấn luyện miễn là nó có thể cấu thành từ vocab đang có. Cách biển diễn linh hoạt nhất là dùng 256-bytes làm vocab, vì mọi dữ liệu bất kỳ đều có thể biểu diễn bằng một chuỗi bytes.
 - Độ phủ thông tin thấp dẫn đến mô hình khó học cách biển diễn thông tin hơn và tốc độ xử lý chậm hơn vì tốc độ xử lý từng token là như nhau mà độ phủ thấp dẫn đến cần (rất) nhiều tokens mới trình bày được thông tin cần triết xuất.
 - Độ phủ thông tin cao dẫn tới việc biểu diễn tốt hơn và ngữ cảnh (số lượng tokens) mô hình có thể kiểm soát dài hơn.
+- BPE (byte-pair-encoding) là một cách tự động cân bằng giữa vocab_size, độ phủ thông tin và tính linh hoạt của mô hình bằng cách định nghĩa cho nó bộ symbols cơ bản nhất (thường là 256-bytes hoặc unicode chars) và max vocab_size, từ đó nó sẽ tìm cách nhóm các symbols đang có lại để có độ phủ thông tin cao nhất mà không vượt quá max vocab_size
+- Vì có sự overlap giữa các tokens nên một câu có thể tknz theo nhiều cách, để giữ được tính linh hoạt của mô hình, ta có thể huấn luyện nó với các cách tknz khác nhau.
 
 ![](docs/files/symato-01.jpg)
 Âm tiết tiếng Việt chiếm ~80% trong text corpus, nó chính là đặc trưng của cả tiếng nói và chữ viết Việt. Dùng âm tiết làm đơn vị là hợp lý. Tiếng Việt viết ~16K âm tiết có ý nghĩa, 12K âm tiết thường dùng, khi phân tách ra thành cách viết không dấu (sym) + dấu (mark) và thanh điệu (tone) thì số lượng đơn vị giảm đi đáng kể. Chỉ còn khoảng 2500 sym và 18 marktone. Như vậy với 2560 tokens là có thể cover hết được sym + marktone và còn thêm các token khác để biểu thị viết hoa vs viết thường, và các trường hợp khác.
