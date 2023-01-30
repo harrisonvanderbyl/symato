@@ -1,6 +1,4 @@
-
-
-
+TODOs
 
 - [x] Tìm cách tokenize hợp với tiếng việt => xem [symato](#symato)
 - [x] Đọc hiểu RWKV => [xem rwkv.md](./docs/rwkv.md)

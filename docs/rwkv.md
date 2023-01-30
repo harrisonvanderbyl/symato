@@ -21,7 +21,7 @@ rwkv là một rnn llm (không dùng attn) với hiệu năng của tfm, nó có
 
 Vì thế nó bao gồm những điều tốt đẹp nhất của rnn và tfm: hiệu năng cao, suy diễn nhanh, tiết kiệm bộ nhớ, huấn luyện nhanh, độ dài ngữ cảnh vô hạn ("infinite" ctx_len), và sentence embedding "miễn phí" (sử dụng trạng thái ẩn cuối).
 
-Bạn có thể chạy mô hình rwkv-4 với từ 3 tới 14 tỉ tham số trên bất kỳ GPU nào với [rwkv_chatbot](https://github.com/harrisonvanderbyl/rwkv_chatbot/blob/main/Example.ipynb)
+Bạn có thể chạy mô hình rwkv-4 với từ 3 tới 14 tỉ tham số với [rwkv_chatbot](https://github.com/harrisonvanderbyl/rwkv_chatbot)
 ```py
 # pip install rwkvstic transformers sty inquirer scipy pytorch
 from rwkvstic.load import RWKV; import torch
@@ -31,7 +31,6 @@ file="https://huggingface.co/BlinkDL/rwkv-4-pile-3b/resolve/main/RWKV-4-Pile-3B-
 # file="https://huggingface.co/BlinkDL/rwkv-4-pile-7b/resolve/main/RWKV-4-Pile-7B-20230109-ctx4096.pth"
 # file="https://huggingface.co/BlinkDL/rwkv-4-pile-14b/resolve/main/RWKV-4-Pile-14B-20230115-5775.pth"
 model = RWKV(file, mode=TORCH_STREAM, dtype=torch.bfloat16, target=3, pinMem=True)
-model.resetState();t=input("q: ");model.loadContext("\n", PROMPT+t+"\nFull Answer:");print(model.forward(number=100)["output"])
 t=input("q: ");model.loadContext("\n", PROMPT+t+"\nFull Answer:");print(model.forward(number=100)["output"])
 # ELDR = "\n\nExpert Long Detailed Response: "
 # model.resetState();t=input("q: ");model.loadContext("\n", t+ELDR);print(model.forward(number=100)["output"])
@@ -41,6 +40,7 @@ Hoặc thử [Discord chatbot](https://discord.com/invite/bDSBUMeFpc)
 
 ![](files/rwkv-chat-01.jpg)
 ![](files/rwkv-chat-02.jpg)
+![](files/rwkv-chat-03.jpg)
 
 ## rwkv rất hiệu quả
 - RWKV-3 1.5B on A40 (tf32) = always 0.015 sec/token, simple pytorch code, GPU 45%, VRAM 7.8G
